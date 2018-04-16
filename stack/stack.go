@@ -4,6 +4,7 @@ import (
 	"sync"
 )
 
+// Stack struct keep tracks of top element, stack size and lock for concurrent safe
 type Stack struct {
 	top  *stackElement
 	size int
@@ -16,12 +17,12 @@ type stackElement struct {
 }
 
 // Len returns the length of stack
-func (s Stack) Len() int {
+func (s *Stack) Len() int {
 	return s.size
 }
 
 // Top returns the top element of stack
-func (s Stack) Top() interface{} {
+func (s *Stack) Top() interface{} {
 	if s.Len() > 0 {
 		return s.top.value
 	}
