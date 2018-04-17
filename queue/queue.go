@@ -3,7 +3,7 @@ package queue
 import (
 	"sync"
 )
-
+// Queue 
 type Queue struct {
 	top  *queueElement
 	size int

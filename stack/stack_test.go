@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func testPush(t *testing.T) {
+func TestPush(t *testing.T) {
 	s := new(Stack)
 	if s.Len() != 0 {
 		t.Fail()
