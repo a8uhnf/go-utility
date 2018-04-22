@@ -11,10 +11,9 @@ const (
 
 // ConcurrentStack struct keep tracks of top element, Concurrentstack size and lock for concurrent safe
 type ConcurrentStack struct {
-	top     *ConcurrentstackElement
-	size    int
-	maxSize int
-	lock    sync.Mutex
+	top  *ConcurrentstackElement
+	size int
+	lock sync.Mutex
 }
 
 // ConcurrentstackElement represent stack element. Contains value and previous element.

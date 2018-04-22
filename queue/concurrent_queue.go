@@ -6,11 +6,10 @@ import (
 
 // ConcurrentQueue struct keeps track of top element, size, last element of ConcurrentQueue
 type ConcurrentQueue struct {
-	top     *ConcurrentQueueElement
-	size    int
-	maxSize int
-	lock    sync.Mutex
-	last    *ConcurrentQueueElement
+	top  *ConcurrentQueueElement
+	size int
+	lock sync.Mutex
+	last *ConcurrentQueueElement
 }
 
 // ConcurrentQueueElement contains queue's element value, next, previous element
