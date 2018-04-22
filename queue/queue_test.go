@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestQueuePush(t *testing.T) {
+func TestQueue(t *testing.T) {
 	q := new(Queue)
 	q.Push(2)
 	if q.Top().(int) != 2 {
@@ -19,6 +19,13 @@ func TestQueuePush(t *testing.T) {
 		t.Fail()
 	}
 	if q.Top() != 3 {
+		t.Fail()
+	}
+	top = q.Pop()
+	if top != 3 {
+		t.Fail()
+	}
+	if q.Len() != 0 {
 		t.Fail()
 	}
 }

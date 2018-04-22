@@ -3,7 +3,8 @@ package queue
 import (
 	"sync"
 )
-// Queue 
+
+// Queue struct keeps track of top element, size, last element of queue
 type Queue struct {
 	top  *queueElement
 	size int
@@ -57,8 +58,8 @@ func (q *Queue) Pop() interface{} {
 		q.lock.Lock()
 		defer q.lock.Unlock()
 		ret := q.top.value
-		q.top = q.top.prev
 		q.top.next = nil
+		q.top = q.top.prev
 		q.size--
 		return ret
 	}
