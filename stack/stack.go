@@ -1,14 +1,21 @@
 package stack
 
 import (
+	"log"
 	"sync"
+)
+
+const (
+	MaxedoutStackError = "Stack maxed out. Unable to push"
+	EmptyStackError    = "Stack empty. Unable to pop."
 )
 
 // Stack struct keep tracks of top element, stack size and lock for concurrent safe
 type Stack struct {
-	top  *stackElement
-	size int
-	lock sync.Mutex
+	top     *stackElement
+	size    int
+	maxSize int
+	lock    sync.Mutex
 }
 
 type stackElement struct {
@@ -16,12 +23,17 @@ type stackElement struct {
 	prev  *stackElement
 }
 
-// Len returns the length of stack
+// Len returns the length of stack.
 func (s *Stack) Len() int {
 	return s.size
 }
 
-// Top returns the top element of stack
+// SetSize sets the stack size.
+func (s *Stack) SetSize(size int) {
+	s.maxSize = size
+}
+
+// Top returns the top element of stack.
 func (s *Stack) Top() interface{} {
 	if s.Len() > 0 {
 		return s.top.value
@@ -29,8 +41,12 @@ func (s *Stack) Top() interface{} {
 	return nil
 }
 
-// Pop remove top value of stack and returns it
+// Pop remove top element of stack and returns it.
 func (s *Stack) Pop() interface{} {
+	if s.Len() <= 0 {
+		log.Println(EmptyStackError)
+		return nil
+	}
 	if s.Len() > 0 {
 		s.lock.Lock()
 		defer s.lock.Unlock()
@@ -44,6 +60,10 @@ func (s *Stack) Pop() interface{} {
 
 // Push add element to stack
 func (s *Stack) Push(v interface{}) {
+	if s.Len() >= s.maxSize {
+		log.Println(MaxedoutStackError)
+		return
+	}
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.top = &stackElement{
