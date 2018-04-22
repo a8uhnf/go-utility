@@ -8,8 +8,7 @@ import (
 )
 
 func regularQueueOps(t *testing.T) {
-	q := new(Queue)
-	q.SetSize(10)
+	q := new(ConcurrentQueue)
 	assert.Equal(t, q.Len(), 0, fmt.Sprint("Queue length should be zero."))
 	q.Push(2)
 	assert.Equal(t, q.Top().(int), 2, fmt.Sprintf("Top element should be 2. Instead found %v", q.Top()))
@@ -23,8 +22,7 @@ func regularQueueOps(t *testing.T) {
 }
 
 func regularQueueOpsBenchmark() error {
-	q := new(Queue)
-	q.SetSize(10)
+	q := new(ConcurrentQueue)
 	if q.Len() != 0 {
 		return fmt.Errorf("Queue length should be zero")
 	}

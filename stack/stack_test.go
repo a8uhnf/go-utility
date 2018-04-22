@@ -8,8 +8,7 @@ import (
 )
 
 func regularStackOps(t *testing.T) {
-	s := new(Stack)
-	s.SetSize(10)
+	s := new(ConcurrentStack)
 	assert.Equal(t, s.Len(), 0, "Stack length should be 0")
 	s.Push(2)
 	assert.Equal(t, s.Top().(int), 2, fmt.Sprintf("Top element should be 2. Instead found %d", s.Top().(int)))
@@ -27,8 +26,7 @@ func TestStack(t *testing.T) {
 }
 
 func regularStackOpsBenchmark() error {
-	s := new(Stack)
-	s.SetSize(10)
+	s := new(ConcurrentStack)
 	if s.Len() != 0 {
 		return fmt.Errorf("Stack length should be 0")
 	}
