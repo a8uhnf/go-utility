@@ -23,8 +23,17 @@ func main() {
 	fmt.Println(q.Pop())
 	fmt.Println(q.Top())
 	fmt.Println("----------------------")
-	var c chan int
-	c = make(chan int, 1)
-	c <- 1
-	<-c
+
+
+	bs := new(stack.BlockingStack)
+	bs.SetSize(10)
+	var chk int
+	go func() {
+		chk = bs.Pop().(int)
+		fmt.Println(chk)
+	}()
+	bs.Push(2)
+	fmt.Println(chk)
+
+	fmt.Scanf("%d",&chk)
 }

@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	MaxedoutConcurrentStackError = "ConcurrentStack maxed out. Unable to push"
-	EmptyConcurrentStackError    = "ConcurrentStack empty. Unable to pop."
+	maxedoutConcurrentStackError = "ConcurrentStack maxed out. Unable to push"
+	emptyConcurrentStackError    = "ConcurrentStack empty. Unable to pop."
 )
 
 // ConcurrentStack struct keep tracks of top element, Concurrentstack size and lock for concurrent safe

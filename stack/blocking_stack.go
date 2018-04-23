@@ -2,6 +2,7 @@ package stack
 
 import (
 	"sync"
+	"fmt"
 )
 
 const (
@@ -59,10 +60,11 @@ func (s *BlockingStack) Top() interface{} {
 
 // Pop remove top element of Blockingstack and returns it.
 func (s *BlockingStack) Pop() interface{} {
+	fmt.Println("****************", s.Len())
 	if s.Len() <= 0 {
 		s.BlockStack()
 	}
-	if s.blockState {
+	if s.Len() == s.maxSize && s.blockState {
 		s.AddStack()
 	}
 	s.lock.Lock()
@@ -75,7 +77,9 @@ func (s *BlockingStack) Pop() interface{} {
 
 // Push add element to Blockingstack
 func (s *BlockingStack) Push(v interface{}) {
+	fmt.Println("XXXXXXXXXXXXXXXXX", s.Len(), s.blockState)
 	if s.Len() == 0 && s.blockState {
+		fmt.Println("----------------")
 		s.AddStack()
 	}
 	if s.Len() >= s.maxSize {

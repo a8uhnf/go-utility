@@ -2,4 +2,4 @@
 
 
 ## Stack
-Stack package is general implementation of "concurrent and blocking" stack
+Stack package is general implementation of concurrent and blocking stack.
