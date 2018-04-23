@@ -15,7 +15,6 @@ type BlockingStack struct {
 	top            *BlockingstackElement
 	size           int
 	maxSize        int
-	lock           sync.Mutex
 	popLock        sync.Mutex
 	pushLock       sync.Mutex
 	popBlock       chan int
@@ -28,6 +27,15 @@ type BlockingStack struct {
 type BlockingstackElement struct {
 	value interface{}
 	prev  *BlockingstackElement
+}
+
+//NewBlockingStack initialize new blocking stack.
+func NewBlockingStack() *BlockingStack {
+	ret := &BlockingStack{
+		popBlock:  make(chan int),
+		pushBlock: make(chan int),
+	}
+	return ret
 }
 
 // SetSize sets the size of stack.
@@ -65,7 +73,7 @@ func (s *BlockingStack) Pop() interface{} {
 	if s.pushBlockState {
 		fmt.Println("exting push-block-state")
 		s.pushBlock <- 1
-		fmt.Println("Push block state...")
+		fmt.Println("exting push-block-state")
 	}
 	return ret
 }

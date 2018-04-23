@@ -6,11 +6,17 @@ import (
 
 // BlockingQueue struct keeps track of top element, size, last element of BlockingQueue
 type BlockingQueue struct {
-	top     *BlockingQueueElement
-	size    int
-	maxSize int
-	lock    sync.Mutex
-	last    *BlockingQueueElement
+	top            *BlockingQueueElement
+	size           int
+	maxSize        int
+	lock           sync.Mutex
+	popLock        sync.Mutex
+	pushLock       sync.Mutex
+	popBlock       chan int
+	pushBlock      chan int
+	pushBlockState bool
+	popBlockState  bool
+	last           *BlockingQueueElement
 }
 
 // BlockingQueueElement contains queue's element value, next, previous element
@@ -18,6 +24,15 @@ type BlockingQueueElement struct {
 	value interface{}
 	next  *BlockingQueueElement
 	prev  *BlockingQueueElement
+}
+
+// NewBlockingQueue initialize blocking queue.
+func NewBlockingQueue() *BlockingQueue {
+	ret := &BlockingQueue{
+		popBlock:  make(chan int),
+		pushBlock: make(chan int),
+	}
+	return ret
 }
 
 // Len returns the length of BlockingQueue
