@@ -1,8 +1,8 @@
 package stack
 
 import (
-	"sync"
 	"fmt"
+	"sync"
 )
 
 const (
@@ -12,12 +12,15 @@ const (
 
 // BlockingStack struct keep tracks of top element, Blockingstack size and lock for concurrent safe
 type BlockingStack struct {
-	top        *BlockingstackElement
-	size       int
-	maxSize    int
-	lock       sync.Mutex
-	block      chan int
-	blockState bool
+	top            *BlockingstackElement
+	size           int
+	maxSize        int
+	lock           sync.Mutex
+	block          []chan int
+	popBlock       chan int
+	pushBlock      chan int
+	pushBlockState bool
+	popBlockState  bool
 }
 
 // BlockingstackElement represent stack element. Contains value and previous element.
@@ -35,16 +38,20 @@ func (s *BlockingStack) SetSize(sz int) {
 func (s *BlockingStack) BlockStack() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
-	s.blockState = true
-	<-s.block
-	s.blockState = false
+	// s.blockState = true
+	// <-s.block
+	for _, val := range s.block {
+		tmp := <-val
+		fmt.Println(tmp)
+	}
+	// s.blockState = false
 }
 
 // AddStack unblock the block state of blocking stack.
 func (s *BlockingStack) AddStack() {
-	s.lock.Lock()
-	defer s.lock.Unlock()
-	s.block <- 1
+	// s.lock.Lock()
+	// defer s.lock.Unlock()
+	// s.block = append(s.block, <-)
 }
 
 // Len returns the length of Blockingstack.
@@ -55,21 +62,24 @@ func (s *BlockingStack) Len() int {
 // Top returns the top element of Blockingstack.
 func (s *BlockingStack) Top() interface{} {
 	if s.Len() <= 0 {
-		s.BlockStack()
+		return nil
 	}
 	return s.top.value
 }
 
 // Pop remove top element of Blockingstack and returns it.
 func (s *BlockingStack) Pop() interface{} {
-	if s.Len() <= 0 {
-		s.BlockStack()
-	}
-	if s.Len() == s.maxSize && s.blockState {
-		s.AddStack()
-	}
 	s.lock.Lock()
 	defer s.lock.Unlock()
+	if s.Len() <= 0 {
+		// s.BlockStack()
+		s.popBlockState = true
+		<-s.popBlock
+		s.popBlockState = false
+	}
+	if s.pushBlockState {
+		s.pushBlock <- 1
+	}
 	ret := s.top.value
 	s.top = s.top.prev
 	s.size--
@@ -78,18 +88,21 @@ func (s *BlockingStack) Pop() interface{} {
 
 // Push add element to Blockingstack
 func (s *BlockingStack) Push(v interface{}) {
-	if s.Len() == 0 && s.blockState {
-		s.AddStack()
-	}
-	if s.Len() >= s.maxSize {
-		fmt.Println("YYYYYYYYYYYYY")
-		s.BlockStack()
-	}
 	s.lock.Lock()
 	defer s.lock.Unlock()
+	if s.Len() >= s.maxSize {
+		fmt.Println("YYYYYYYYYYYYY")
+		// s.BlockStack()
+		s.pushBlockState = true
+		<-s.pushBlock
+		s.pushBlockState = false
+	}
 	s.top = &BlockingstackElement{
 		value: v,
 		prev:  s.top,
 	}
 	s.size++
+	if s.popBlockState {
+		s.popBlock <- 1
+	}
 }

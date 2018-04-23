@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/a8uhnf/go-utility/queue"
 	"github.com/a8uhnf/go-utility/stack"
@@ -23,20 +24,26 @@ func main() {
 	fmt.Println(q.Pop())
 	fmt.Println(q.Top())
 	fmt.Println("----------------------")
-
-
+	// blocking stack example
 	bs := new(stack.BlockingStack)
 	bs.SetSize(2)
-	bs.Push(2)
-	bs.Push(3)
+	go bs.Push(2)
+	time.Sleep(1 * time.Second)
+	go bs.Push(3)
+	time.Sleep(1 * time.Second)
 
 	var chk int
 	go func() {
 		chk = bs.Pop().(int)
-		fmt.Println(chk)
+		fmt.Println("***", chk)
 	}()
-	bs.Push(4)
-	fmt.Println(bs.Pop())
+	go bs.Push(4)
+	go func() {
+		chk = bs.Pop().(int)
+		fmt.Println("***", chk)
+	}()
 
-	fmt.Scanf("%d",&chk)
+	time.Sleep(2 * time.Second)
+	fmt.Println("xxx", bs.Top())
+	fmt.Scanf("%d", &chk)
 }
