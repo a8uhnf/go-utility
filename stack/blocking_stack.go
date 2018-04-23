@@ -1,7 +1,6 @@
 package stack
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -34,26 +33,6 @@ func (s *BlockingStack) SetSize(sz int) {
 	s.maxSize = sz
 }
 
-// BlockStack blocks the stack, when its empty or full.
-func (s *BlockingStack) BlockStack() {
-	s.lock.Lock()
-	defer s.lock.Unlock()
-	// s.blockState = true
-	// <-s.block
-	for _, val := range s.block {
-		tmp := <-val
-		fmt.Println(tmp)
-	}
-	// s.blockState = false
-}
-
-// AddStack unblock the block state of blocking stack.
-func (s *BlockingStack) AddStack() {
-	// s.lock.Lock()
-	// defer s.lock.Unlock()
-	// s.block = append(s.block, <-)
-}
-
 // Len returns the length of Blockingstack.
 func (s *BlockingStack) Len() int {
 	return s.size
@@ -72,7 +51,6 @@ func (s *BlockingStack) Pop() interface{} {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	if s.Len() <= 0 {
-		// s.BlockStack()
 		s.popBlockState = true
 		<-s.popBlock
 		s.popBlockState = false
@@ -91,8 +69,6 @@ func (s *BlockingStack) Push(v interface{}) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	if s.Len() >= s.maxSize {
-		fmt.Println("YYYYYYYYYYYYY")
-		// s.BlockStack()
 		s.pushBlockState = true
 		<-s.pushBlock
 		s.pushBlockState = false
