@@ -1,7 +1,6 @@
 package stack
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -59,8 +58,6 @@ func (s *BlockingStack) Top() interface{} {
 // Pop remove top element of Blockingstack and returns it.
 func (s *BlockingStack) Pop() interface{} {
 	s.popLock.Lock()
-	fmt.Println("Hello World!!!----", s.Top())
-	fmt.Println("Hello World!!!----", s.Len())
 	defer s.popLock.Unlock()
 	if s.Len() <= 0 {
 		s.popBlockState = true
@@ -71,9 +68,7 @@ func (s *BlockingStack) Pop() interface{} {
 	s.top = s.top.prev
 	s.size--
 	if s.pushBlockState {
-		fmt.Println("exting push-block-state")
 		s.pushBlock <- 1
-		fmt.Println("exting push-block-state")
 	}
 	return ret
 }
@@ -84,9 +79,7 @@ func (s *BlockingStack) Push(v interface{}) {
 	defer s.pushLock.Unlock()
 	if s.Len() >= s.maxSize {
 		s.pushBlockState = true
-		fmt.Println("entering push-block-state")
 		<-s.pushBlock
-		fmt.Println("entering push-block-state")
 		s.pushBlockState = false
 	}
 	s.top = &BlockingstackElement{

@@ -66,6 +66,9 @@ func main() {
 		fmt.Println("***", chk1)
 	}()
 
+	b := make(chan bool)
+	b <- true
+	
 	time.Sleep(2 * time.Second)
 	fmt.Println("xxx", qs.Top())
 	fmt.Println("xxx", qs.Len())

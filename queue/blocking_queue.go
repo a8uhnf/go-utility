@@ -50,8 +50,12 @@ func (q *BlockingQueue) Top() interface{} {
 
 // Push function insert element at the last of BlockingQueue
 func (q *BlockingQueue) Push(v interface{}) {
-	q.lock.Lock()
-	defer q.lock.Unlock()
+	q.pushLock.Lock()
+	defer q.pushLock.Unlock()
+	if q.Len() >= q.maxSize {
+		q.pushBlockState = true
+		q.pushBlock<-1
+	}
 	if q.Len() == 0 {
 		q.top = &BlockingQueueElement{
 			value: v,
