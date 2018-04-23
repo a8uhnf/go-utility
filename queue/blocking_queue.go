@@ -9,7 +9,6 @@ type BlockingQueue struct {
 	top            *BlockingQueueElement
 	size           int
 	maxSize        int
-	lock           sync.Mutex
 	popLock        sync.Mutex
 	pushLock       sync.Mutex
 	popBlock       chan int
@@ -35,6 +34,11 @@ func NewBlockingQueue() *BlockingQueue {
 	return ret
 }
 
+// SetSize sets the maximum size of blocking queue
+func (q *BlockingQueue) SetSize(sz int) {
+	q.maxSize = sz
+}
+
 // Len returns the length of BlockingQueue
 func (q *BlockingQueue) Len() int {
 	return q.size
@@ -54,7 +58,8 @@ func (q *BlockingQueue) Push(v interface{}) {
 	defer q.pushLock.Unlock()
 	if q.Len() >= q.maxSize {
 		q.pushBlockState = true
-		q.pushBlock<-1
+		q.pushBlock <- 1
+		q.pushBlockState = false
 	}
 	if q.Len() == 0 {
 		q.top = &BlockingQueueElement{
@@ -72,18 +77,33 @@ func (q *BlockingQueue) Push(v interface{}) {
 		value: v,
 	}
 	tmp.prev = q.last
+	if q.popBlockState {
+		<-q.popBlock
+	}
 }
 
 // Pop function remove top element from the BlockingQueue
 func (q *BlockingQueue) Pop() interface{} {
-	if q.Len() > 0 {
-		q.lock.Lock()
-		defer q.lock.Unlock()
+	q.popLock.Lock()
+	defer q.popLock.Unlock()
+	/* if q.Len() > 0 {
 		ret := q.top.value
 		q.top.next = nil
 		q.top = q.top.prev
 		q.size--
 		return ret
+	} */
+	if q.Len() == 0 {
+		q.popBlockState = true
+		q.popBlock <- 1
+		q.popBlockState = false
 	}
-	return nil
+	ret := q.top.value
+	q.top.next = nil
+	q.top = q.top.prev
+	q.size--
+	if q.pushBlockState {
+		<-q.pushBlock
+	}
+	return ret
 }

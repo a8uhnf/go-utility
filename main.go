@@ -47,9 +47,9 @@ func main() {
 	fmt.Println("xxx", bs.Top())
 	fmt.Println("xxx", bs.Len())
 
-	fmt.Println("----------------------")
+	fmt.Println("----------------------: Blocking queue...")
 	// blocking queue example
-	qs := stack.NewBlockingStack()
+	qs := queue.NewBlockingQueue()
 	qs.SetSize(2)
 	qs.Push(2)
 	qs.Push(3)
@@ -57,18 +57,15 @@ func main() {
 	fmt.Println(qs.Top())
 	var chk1 int
 	go func() {
-		chk = qs.Pop().(int)
+		chk1 = qs.Pop().(int)
 		fmt.Println("***", chk1)
 	}()
 	go qs.Push(4)
 	go func() {
-		chk = qs.Pop().(int)
+		chk1 = qs.Pop().(int)
 		fmt.Println("***", chk1)
 	}()
 
-	b := make(chan bool)
-	b <- true
-	
 	time.Sleep(2 * time.Second)
 	fmt.Println("xxx", qs.Top())
 	fmt.Println("xxx", qs.Len())
