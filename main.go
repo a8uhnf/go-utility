@@ -27,11 +27,10 @@ func main() {
 	// blocking stack example
 	bs := new(stack.BlockingStack)
 	bs.SetSize(2)
-	go bs.Push(2)
-	time.Sleep(1 * time.Second)
-	go bs.Push(3)
-	time.Sleep(1 * time.Second)
-
+	bs.Push(2)
+	bs.Push(3)
+	go bs.Push(6)
+	fmt.Println(bs.Top())
 	var chk int
 	go func() {
 		chk = bs.Pop().(int)
@@ -45,5 +44,6 @@ func main() {
 
 	time.Sleep(2 * time.Second)
 	fmt.Println("xxx", bs.Top())
+	fmt.Println("xxx", bs.Len())
 	fmt.Scanf("%d", &chk)
 }

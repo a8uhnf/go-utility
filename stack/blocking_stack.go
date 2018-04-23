@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -15,7 +16,8 @@ type BlockingStack struct {
 	size           int
 	maxSize        int
 	lock           sync.Mutex
-	block          []chan int
+	popLock        sync.Mutex
+	pushLock       sync.Mutex
 	popBlock       chan int
 	pushBlock      chan int
 	pushBlockState bool
@@ -48,29 +50,35 @@ func (s *BlockingStack) Top() interface{} {
 
 // Pop remove top element of Blockingstack and returns it.
 func (s *BlockingStack) Pop() interface{} {
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	s.popLock.Lock()
+	fmt.Println("Hello World!!!----", s.Top())
+	fmt.Println("Hello World!!!----", s.Len())
+	defer s.popLock.Unlock()
 	if s.Len() <= 0 {
 		s.popBlockState = true
 		<-s.popBlock
 		s.popBlockState = false
 	}
-	if s.pushBlockState {
-		s.pushBlock <- 1
-	}
 	ret := s.top.value
 	s.top = s.top.prev
 	s.size--
+	if s.pushBlockState {
+		fmt.Println("exting push-block-state")
+		s.pushBlock <- 1
+		fmt.Println("Push block state...")
+	}
 	return ret
 }
 
 // Push add element to Blockingstack
 func (s *BlockingStack) Push(v interface{}) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	s.pushLock.Lock()
+	defer s.pushLock.Unlock()
 	if s.Len() >= s.maxSize {
 		s.pushBlockState = true
+		fmt.Println("entering push-block-state")
 		<-s.pushBlock
+		fmt.Println("entering push-block-state")
 		s.pushBlockState = false
 	}
 	s.top = &BlockingstackElement{
