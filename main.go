@@ -26,14 +26,17 @@ func main() {
 
 
 	bs := new(stack.BlockingStack)
-	bs.SetSize(10)
+	bs.SetSize(2)
+	bs.Push(2)
+	bs.Push(3)
+
 	var chk int
 	go func() {
 		chk = bs.Pop().(int)
 		fmt.Println(chk)
 	}()
-	bs.Push(2)
-	fmt.Println(chk)
+	bs.Push(4)
+	fmt.Println(bs.Pop())
 
 	fmt.Scanf("%d",&chk)
 }
