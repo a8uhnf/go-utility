@@ -86,13 +86,6 @@ func (q *BlockingQueue) Push(v interface{}) {
 func (q *BlockingQueue) Pop() interface{} {
 	q.popLock.Lock()
 	defer q.popLock.Unlock()
-	/* if q.Len() > 0 {
-		ret := q.top.value
-		q.top.next = nil
-		q.top = q.top.prev
-		q.size--
-		return ret
-	} */
 	if q.Len() == 0 {
 		q.popBlockState = true
 		q.popBlock <- 1
